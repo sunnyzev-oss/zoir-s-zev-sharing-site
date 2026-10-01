@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Share Your Location</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>Share Your Location</h1>
+
+    <p>
+      Your location will only be shared after you
+      press the button below and allow location
+      access in your browser.
+    </p>
+
+    <button id="locationBtn">
+      Share My Location
+    </button>
+
+    <div id="status"></div>
+
+  </div>
+
+  <script>
+    const button = document.getElementById("locationBtn");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", () => {
+
+      if (!navigator.geolocation) {
+        status.textContent =
+          "Location services are not supported by this browser.";
+        return;
+      }
+
+      button.disabled = true;
+
+      status.textContent =
+        "Requesting your location...";
+
+      navigator.geolocation.getCurrentPosition(
+
+        (position) => {
+
+          const latitude =
+            position.coords.latitude;
+
+          const longitude =
+            position.coords.longitude;
+
+          const accuracy =
+            position.coords.accuracy;
+
+          status.innerHTML = `
+            Location permission granted.<br><br>
+            Latitude: ${latitude}<br>
+            Longitude: ${longitude}<br>
+            Accuracy: ${Math.round(accuracy)} meters
+          `;
+
+          button.disabled = false;
+        },
+
+        (error) => {
+
+          status.textContent =
+            "Location was not shared: " +
+            error.message;
+
+          button.disabled = false;
+        },
+
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+
+    });
+  </script>
+
+</body>
+</html>
